@@ -49,7 +49,7 @@ class MyReply(object):
 
     def help_query(self, content):
         return '''\
-(0) 获取帮助，如发送h。
+(0) 获取帮助，如发送<a href="weixin://bizmsgmenu?msgmenucontent=h&msgmenuid=2">h</a>。
 (1) 查询公交，如发送543。
 '''
     
@@ -76,7 +76,8 @@ class MyReply(object):
         
         if self.is_bus(content):
             return self.bus_query(content)
-
+        
+        return 
 
     def event_reply(self, msg):
         event = msg._data['Event']

@@ -25,6 +25,7 @@ def query(content):
 
     # @direction station {{{
     res = []
+    menuid = 0
     for item in dirs:
         data = {
             'act': 'getDirStation',
@@ -37,9 +38,10 @@ def query(content):
 
         tmp = '{}:\n{}\n'.format(
             item[1], '->'.join([
-                '<a href="weixin://bizmsgmenu?msgmenucontent=bustime {}-{}-{}&msgmenuid=1">{}</a>'\
-                        .format(bus_id, item[0], s[0], s[1]) for s in stations])
+                '<a href="weixin://bizmsgmenu?msgmenucontent=bustime {}-{}-{}&msgmenuid={}">{}</a>'\
+                        .format(bus_id, item[0], s[0], menuid + k, s[1]) for k, s in enumerate(stations)])
         )
+        menuid += len(stations)
         res.append(tmp)
 
     res = '\n'.join(res)
