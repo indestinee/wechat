@@ -62,7 +62,6 @@ def wechat():
 
         msg = parse_message(msg)
         
-        cp.log(msg.type)
 
         if msg.type == 'text':
             reply = create_reply(rpl.text_reply(msg), msg)

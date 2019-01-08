@@ -7,12 +7,13 @@ class MyReply(object):
 
 
     def text_reply(self, msg):
-        user = msg._data['FromUserName']
+        wechat = msg._data['FromUserName']
         
-        user_db = db.select('user', limitation={'user': user})
+        user_db = db.select('user', limitation={'wechat': wechat})
         if len(user_db) == 0:
             return '尚未注册，请取消关注后重新关注！'
         user_db = user_db[0]
+        user = user_db['username']
         if user_db['level'] == 0:
             return '已经注册，尚未通过审核，请联系管理员！'
 
