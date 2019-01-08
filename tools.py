@@ -1,4 +1,24 @@
 from utils.database import DataBase
+ilegal = '非法操作！'
+class LinkMsg(object):
+    def __init__(self):
+        self.cnt = 0
+        self.msgs = []
+
+    def add_msg(self, msg):
+        self.msgs.append(msg)
+
+    def add_item(self, msg, code=None):
+        if code is None:
+            code = msg
+        self.cnt += 1
+        self.msgs.append(
+            '<a href="weixin://bizmsgmenu?msgmenucontent={}&msgmenuid={}">{}</a>'.format(\
+                code, self.cnt, msg))
+
+    def dump(self, connect='\n'):
+        return connect.join(self.msgs)
+
 
 
 __tables__ = [{
@@ -9,6 +29,9 @@ __tables__ = [{
             }, {
                 "key": "value",
                 "db_type": "BLOB",
+            }, {
+                "key": "duration",
+                "db_type": "FLOAT",
             }
         ]
     }, {

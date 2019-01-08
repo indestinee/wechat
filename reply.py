@@ -58,9 +58,14 @@ class MyReply(object):
         try: 
             bus_id = int(content)
             return True
-        except: return False
+        except: 
+            if content[:3] == 'bus':
+                return True
+            return False
 
     def bus_query(self, content):
+        if content[:3] == 'bus':
+            return bus.bus_query(content)
         return bus.query(content)
 
 

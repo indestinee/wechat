@@ -1,5 +1,8 @@
 import requests, re
+from tools import *
 sess = requests.Session()
+
+        
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
@@ -8,12 +11,29 @@ headers = {
 
 re_dir = re.compile('<a .*?data-uuid="(.*?)">(.*?)</a>', re.S)
 re_station = re.compile('<a .*?data-seq="(.*?)">(.*?)</a>', re.S)
+query_url = 'https://www.bjbus.com/home/ajax_rtbus_data.php'
 
-def query(content):
+def get_bus_stations(bus_id, selBDir):
+    x = db.get_global('bus {} {}'.format(bus_id, selBDir))
+    if x is not None:
+        return x
+    data = {
+        'act': 'getDirStation',
+        'selBLine': bus_id, 
+        'selBDir': selBDir,
+    }
+    response = sess.get(query_url, params=data, headers=headers)
+    response.encoding = 'utf-8'
+    stations = re_station.findall(response.text)
+    db.set_global('bus {} {}'.format(bus_id, selBDir), stations, expired_time=60)
+    return stations
+
+def get_bus_dirs(content):
     bus_id = int(content)
-    query_url = 'https://www.bjbus.com/home/ajax_rtbus_data.php'
+    x = db.get_global('bus {}'.format(bus_id))
+    if x is not None:
+        return x
 
-    # @direction query {{{
     data = {
         'act': 'getLineDir',
         'selBLine': bus_id,
@@ -21,38 +41,83 @@ def query(content):
     response = sess.get(query_url, params=data, headers=headers)
     response.encoding = 'utf-8'
     dirs = re_dir.findall(response.text)
-    # }}}
+    db.set_global('bus {}'.format(bus_id), dirs, expired_time=60)
+    return dirs
 
-    # @direction station {{{
-    res = []
-    menuid = 1
-    for item in dirs:
+def query(content):
+    bus_id = int(content)
+    dirs = get_bus_dirs(content)
+
+    lmsg = LinkMsg()
+    for item_k, item in enumerate(dirs):
+        lmsg.add_item(item[1], '{} {}'.format(bus_id, item_k))
+
+    res = lmsg.dump()
+    return res
+
+
+re_h2 = re.compile('<h2.*?>(.*?)</h2>', re.S)
+re_article = re.compile('<article.*?>(.*?)</article>', re.S)
+
+def bus_query(content):
+    info = content.split(' ')[1:]
+    try: bus_id = int(info[0])
+    except: bus_id = -1
+    try: dir_id = int(info[1])
+    except: dir_id = -1
+    try: station_id = int(info[2])
+    except: station_id = -1
+
+    if bus_id == -1 or dir_id == -1:
+        return ilegal
+
+
+
+    dirs = get_bus_dirs(bus_id)
+
+    try: selBDir = dirs[dir_id][0]
+    except: return ilegal
+    
+    stations = get_bus_stations(bus_id, selBDir)
+
+    
+    if station_id == -1:
+        lmsg = LinkMsg()
+        for s in stations:
+            lmsg.add_item(s[1], 'bus {} {} {}'.format(bus_id, dir_id, s[0]))
+
+        res = lmsg.dump('->')
+        return res
+    else:
         data = {
-            'act': 'getDirStation',
-            'selBLine': bus_id, 
-            'selBDir': item[0],
+            'act': 'busTime',
+            'selBLine': bus_id,
+            'selBDir': selBDir,
+            'selBStop': station_id, 
         }
         response = sess.get(query_url, params=data, headers=headers)
         response.encoding = 'utf-8'
-        stations = re_station.findall(response.text)
+        res = response.json()
 
-        tmp = '{}:\n{}\n'.format(
-            item[1], '->'.join([
-                '<a href="weixin://bizmsgmenu?msgmenucontent=bustime {} {} {}&msgmenuid={}">{}</a>'\
-                        .format(bus_id, item[0], s[0], menuid + k, s[1]) for k, s in enumerate(stations)])
-        )
-        menuid += len(stations)
-        res.append(tmp)
+        articles = re_article.findall(res['html'])
+        h2s = re_h2.findall(res['html'])
 
-    res = '\n'.join(res)
-    print(res)
-    return res[:500]
+        return '{}: {}\n{}'.format(bus_id, h2s[0], articles[0])
 
-def time_query(content):
-    pass
+        # return re
 
 
     # }}}
 if __name__ == '__main__':
     
-    query('543')
+    x = query('549')
+    print(x)
+    x = bus_query('bus 549')
+    print(x)
+    x = bus_query('bus 549 5')
+    print(x)
+    x = bus_query('bus 549 0')
+    print(x)
+    x = bus_query('bus 549 1 2')
+    print(x)
+
