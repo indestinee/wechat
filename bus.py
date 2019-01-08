@@ -114,6 +114,12 @@ def bus_query(content):
     # }}}
 if __name__ == '__main__':
     
+    x = query('916')
+    print(x)
+    x = bus_query('bus 916 1')
+    print(len(x))
+    print(x)
+    exit(0)
     x = query('549')
     print(x)
     x = bus_query('bus 549')

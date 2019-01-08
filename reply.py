@@ -1,6 +1,6 @@
-from tools import db
+from tools import *
 import random
-import bus
+import bus, simple
 
 def random_str(n=16):
     s = 'qwertyuiopasdfgjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'
@@ -48,11 +48,20 @@ class MyReply(object):
         return content.lower() in ['h', 'help', 'helps', 'bz', '帮助', 'bangzhu']
 
     def help_query(self, content):
-        return '''\
-(0) 获取帮助，如发送<a href="weixin://bizmsgmenu?msgmenucontent=h&msgmenuid=1">h</a>。
-(1) 查询公交，如发送<a href="weixin://bizmsgmenu?msgmenucontent=h&msgmenuid=2">543</a>, <a href="weixin://bizmsgmenu?msgmenucontent=549&msgmenuid=3">549</a>, <a href="weixin://bizmsgmenu?msgmenucontent=579&msgmenuid=4">579</a>。
-(2) 随意的测试，如发送<a href="weixin://bizmsgmenu?msgmenucontent=h s&msgmenuid=5">h s</a>。
-'''
+        lmsg = LinkMsg()
+        res = '''\
+(0) 获取帮助，如发送{}。
+(1) 查询北京公交，如发送{}, {}, {}。
+(2) 查询北京雾霾指数，如发送{}。
+(2) 查询北京天气，如发送{}。
+'''.format(lmsg.add_item('h'), lmsg.add_item(549), lmsg.add_item(579), lmsg.add_item(543),\
+        lmsg.add_item('wm'), lmsg.add_item('tq'))
+
+    def wm(self, content):
+        return simple.wm(content)
+
+    def tq(self, content):
+        return simple.tq(content)
     
     def is_bus(self, content):
         try: 
@@ -82,6 +91,12 @@ class MyReply(object):
         
         if self.is_bus(content):
             return self.bus_query(content)
+        
+        if content[:2] == 'wm':
+            return self.wm(content)
+
+        if content[:2] == 'tq':
+            return self.tq(content)
         
         return 
 

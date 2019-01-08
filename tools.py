@@ -5,6 +5,8 @@ class LinkMsg(object):
         self.cnt = 0
         self.msgs = []
 
+
+
     def add_msg(self, msg):
         self.msgs.append(msg)
 
@@ -12,9 +14,11 @@ class LinkMsg(object):
         if code is None:
             code = msg
         self.cnt += 1
-        self.msgs.append(
-            '<a href="weixin://bizmsgmenu?msgmenucontent={}&msgmenuid={}">{}</a>'.format(\
-                code, self.cnt, msg))
+        item = '<a href="weixin://bizmsgmenu?msgmenucontent={}&msgmenuid={}">{}</a>'.format(\
+                code, self.cnt, msg)
+        self.msgs.append(item)
+        return item
+
 
     def dump(self, connect='\n'):
         return connect.join(self.msgs)
