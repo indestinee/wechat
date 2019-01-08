@@ -102,7 +102,11 @@ def bus_query(content):
         articles = re_article.findall(res['html'])
         h2s = re_h2.findall(res['html'])
 
-        return '{}: {}\n{}'.format(bus_id, h2s[0], articles[0])
+        article = articles[0]
+        article = article.replace('<p>', '').replace('</p>', '\n')\
+                .replace('&nbsp;', ' ').replace('<span>', ''). replace('</span>', '')
+
+        return '{}: {}\n{}'.format(bus_id, h2s[0], article)
 
         # return re
 
