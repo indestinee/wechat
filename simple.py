@@ -36,7 +36,7 @@ def wm(content):
         value = re_tag.sub('', value).replace(' ', '').replace('\n', ' ').replace('\r', '').strip()
 
         res += date + value + '\n'
-    db.set_global('wm', res, expire_time=3600)
+    db.set_global('wm', res, expired_time=3600)
     return res
         
 def tq(content):
