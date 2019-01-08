@@ -5,7 +5,7 @@ with open('./data/config.json') as f:
     _cfg_ = json.load(f)
 
 
-def set_admin(wechat):
+def set_admin():
     for admin in _cfg_:
         db.upd_row('user', limitation={'wechat': admin}, data={'level': 100})
 if __name__ == '__main__':
