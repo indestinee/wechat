@@ -25,7 +25,7 @@ def query(content):
 
     # @direction station {{{
     res = []
-    menuid = 0
+    menuid = 1
     for item in dirs:
         data = {
             'act': 'getDirStation',
