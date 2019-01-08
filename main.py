@@ -9,7 +9,7 @@ from wechatpy.exceptions import InvalidAppIdException
 
 from utils import cp
 
-from reply import *
+from reply import rpl
 # set token or get from environments
 with open('./data/config.json') as f:
     _cfg_ = json.load(f)
@@ -65,7 +65,9 @@ def wechat():
         cp.log(msg.type)
 
         if msg.type == 'text':
-            reply = create_reply(text_reply(msg) , msg)
+            reply = create_reply(rpl.text_reply(msg), msg)
+        elif msg.type == 'event':
+            reply = create_reply(rpl.event_reply(msg), msg)
         else:
             reply = create_reply('Sorry, can not handle this for now', msg)
         return crypto.encrypt_message(
