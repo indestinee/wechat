@@ -1,5 +1,6 @@
 from tools import db
 import random
+import bus
 
 def random_str(n=16):
     s = 'qwertyuiopasdfgjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'
@@ -43,20 +44,44 @@ class MyReply(object):
             return '已通过注册及审核，身份为{}。'.format(_)
 
 
+    def is_help(self, content):
+        return content.lower() in ['h', 'help', 'helps', 'bz', '帮助', 'bangzhu']
+
+    def help_query(self, content):
+        return '''\
+(0) 获取帮助，如发送h。
+(1) 查询公交，如发送543。
+'''
+    
+    def is_bus(self, content):
+        try: 
+            bus_id = int(content)
+            return True
+        except: return False
+
+    def bus_query(self, content):
+        return bus.query(content)
+
+
     def text_reply(self, msg):
         wechat = msg._data['FromUserName']
-        
         level, _ = self.user_level(wechat)
         if level < 1:
             return _
+        
+        content = msg.content.strip()
 
-        user = user_db['username']
-        return 'hi, ' + _ + user
+        if self.is_help(content):
+            return self.help_query(content)
+        
+        if self.is_bus(content):
+            return self.bus_query(content)
+
 
     def event_reply(self, msg):
-        print(msg)
-        if msg._data['Event'] == 'subscribe':
+        event = msg._data['Event']
+        if event == 'subscribe':
             return self.register(msg._data['FromUserName'])
-        return 'hi'
+        return '不处理\'{}\'事件。:)'.format(event)
 
 rpl = MyReply()
