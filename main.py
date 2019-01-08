@@ -7,6 +7,7 @@ from wechatpy.utils import check_signature
 from wechatpy.exceptions import InvalidSignatureException
 from wechatpy.exceptions import InvalidAppIdException
 
+from utils import cp
 
 from reply import *
 # set token or get from environments
@@ -60,6 +61,9 @@ def wechat():
             abort(403)
 
         msg = parse_message(msg)
+        
+        cp.log(msg.type)
+
         if msg.type == 'text':
             reply = create_reply(text_reply(msg) , msg)
         else:
