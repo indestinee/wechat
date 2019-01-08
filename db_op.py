@@ -16,7 +16,7 @@ def check_user():
         n_level = input('new level: ')
         n_level = int(n_level)
         assert n_level >= 0 and n_level <= 100
-        db.upd_row('user', limitation=user, data={'level': n_level})
+        db.upd_row('user', limitation={'wechat': user['wechat'], data={'level': n_level})
 
 if __name__ == '__main__':
     # set_admin()
