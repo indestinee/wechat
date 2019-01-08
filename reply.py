@@ -3,7 +3,7 @@ import random
 
 def random_str(n=16):
     s = 'qwertyuiopasdfgjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'
-    return '.'.join(random.sample(s, n))
+    return ''.join(random.sample(s, n))
 
 
 
