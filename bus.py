@@ -37,7 +37,7 @@ def query(content):
 
         tmp = '{}:\n{}\n'.format(
             item[1], '->'.join([
-                '<a href="weixin://bizmsgmenu?msgmenucontent={}{}{}&msgmenuid=1">{}</a>'\
+                '<a href="weixin://bizmsgmenu?msgmenucontent=bustime {}-{}-{}&msgmenuid=1">{}</a>'\
                         .format(bus_id, item[0], s[0], s[1]) for s in stations])
         )
         res.append(tmp)
