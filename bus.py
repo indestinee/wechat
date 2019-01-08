@@ -46,7 +46,7 @@ def query(content):
 
     res = '\n'.join(res)
     print(res)
-    return res
+    return res[:80]
 
 def time_query(content):
     pass
