@@ -47,13 +47,13 @@ class MyReply(object):
     def is_help(self, content):
         return content.lower() in ['h', 'help', 'helps', 'bz', '帮助', 'bangzhu']
 
-    def help_query(self, content):
+    def help_query(self, content=None):
         lmsg = LinkMsg()
         res = '''\
-(0) 获取帮助，如发送{}。
-(1) 查询北京公交，如发送{}, {}, {}。
-(2) 查询北京雾霾指数，如发送{}。
-(2) 查询北京天气，如发送{}。
+(1) 获取帮助，如发送{}。
+(2) 查询北京公交，如发送{}, {}, {}。
+(3) 查询北京雾霾指数，如发送{}。
+(4) 查询北京天气，如发送{}。
 '''.format(lmsg.add_item('h'), lmsg.add_item(549), lmsg.add_item(579), lmsg.add_item(543),\
         lmsg.add_item('wm'), lmsg.add_item('tq'))
         return res
@@ -104,7 +104,7 @@ class MyReply(object):
     def event_reply(self, msg):
         event = msg._data['Event']
         if event == 'subscribe':
-            return self.register(msg._data['FromUserName'])
+            return self.register(msg._data['FromUserName']) + '\n' + self.help_query()
         return '不处理\'{}\'事件。:)'.format(event)
 
 rpl = MyReply()
