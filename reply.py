@@ -56,7 +56,7 @@ class MyReply(object):
     def event_reply(self, msg):
         print(msg)
         if msg._data['Event'] == 'subscribe':
-            return register(msg._data['FromUserName'])
+            return self.register(msg._data['FromUserName'])
         return 'hi'
 
 rpl = MyReply()
