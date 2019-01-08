@@ -50,7 +50,8 @@ class MyReply(object):
     def help_query(self, content):
         return '''\
 (0) 获取帮助，如发送<a href="weixin://bizmsgmenu?msgmenucontent=h&msgmenuid=1">h</a>。
-(1) 查询公交，如发送<a href="weixin://bizmsgmenu?msgmenucontent=h&msgmenuid=1">543</a>, <a href="weixin://bizmsgmenu?msgmenucontent=549&msgmenuid=2">549</a>, <a href="weixin://bizmsgmenu?msgmenucontent=579&msgmenuid=3">579</a>。
+(1) 查询公交，如发送<a href="weixin://bizmsgmenu?msgmenucontent=h&msgmenuid=2">543</a>, <a href="weixin://bizmsgmenu?msgmenucontent=549&msgmenuid=3">549</a>, <a href="weixin://bizmsgmenu?msgmenucontent=579&msgmenuid=4">579</a>。
+(2) 随意的测试，如发送<a href="weixin://bizmsgmenu?msgmenucontent=h s&msgmenuid=5">h s</a>。
 '''
     
     def is_bus(self, content):

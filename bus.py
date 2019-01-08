@@ -38,7 +38,7 @@ def query(content):
 
         tmp = '{}:\n{}\n'.format(
             item[1], '->'.join([
-                '<a href="weixin://bizmsgmenu?msgmenucontent=bustime {}-{}-{}&msgmenuid={}">{}</a>'\
+                '<a href="weixin://bizmsgmenu?msgmenucontent=bustime {} {} {}&msgmenuid={}">{}</a>'\
                         .format(bus_id, item[0], s[0], menuid + k, s[1]) for k, s in enumerate(stations)])
         )
         menuid += len(stations)
