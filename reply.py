@@ -56,6 +56,7 @@ class MyReply(object):
 (2) 查询北京天气，如发送{}。
 '''.format(lmsg.add_item('h'), lmsg.add_item(549), lmsg.add_item(579), lmsg.add_item(543),\
         lmsg.add_item('wm'), lmsg.add_item('tq'))
+        return res
 
     def wm(self, content):
         return simple.wm(content)
