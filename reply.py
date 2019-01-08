@@ -21,3 +21,5 @@ class MyReply(object):
     def event_reply(self, msg):
         print(msg)
         return 'hi'
+
+rpl = MyReply()
