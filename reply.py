@@ -49,8 +49,6 @@ class MyReply(object):
         level, _ = self.user_level(wechat)
         if level < 1:
             return _
-        if level == 0:
-            '未通过审核，请等待审核。'
 
         user = user_db['username']
         return 'hi, ' + _ + user
