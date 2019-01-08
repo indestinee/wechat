@@ -50,7 +50,7 @@ def query(content):
 
     lmsg = LinkMsg()
     for item_k, item in enumerate(dirs):
-        lmsg.add_item(item[1], '{} {}'.format(bus_id, item_k))
+        lmsg.add_item(item[1], 'bus {} {}'.format(bus_id, item_k))
 
     res = lmsg.dump()
     return res
