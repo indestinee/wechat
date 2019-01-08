@@ -37,7 +37,7 @@ class MyReply(object):
                 return '注册失败，请联系管理员查看错误日志！'
         elif level == 0:
             code = random_str(6)
-            db.add_row('user', limitation={'wechat': wechat}, data={'code': code})
+            db.upd_row('user', limitation={'wechat': wechat}, data={'code': code})
             return '已通过注册，等待审核，验证码为{}。'.format(code)
         else:
             return '已通过注册及审核，身份为{}。'.format(_)
@@ -49,6 +49,8 @@ class MyReply(object):
         level, _ = self.user_level(wechat)
         if level < 1:
             return _
+        if level == 0:
+            '未通过审核，请等待审核。'
 
         user = user_db['username']
         return 'hi, ' + _ + user
