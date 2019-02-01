@@ -41,6 +41,7 @@ class MyReply(object):
         if event == 'subscribe':
             if res is None:
                 return text_reply('help')
+            return res
         return '不处理\'{}\'事件。:)'.format(event)
     # }}}
     def text_op(self, msg):# {{{
