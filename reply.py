@@ -24,7 +24,7 @@ class MyReply(object):
     def __init__(self):# {{{
         self.db = db
     # }}}
-    def reply(msg):# {{{
+    def reply(self, msg):# {{{
         if msg.type == 'event':
             content = self.event_op(msg)
         elif msg.type == 'text':
