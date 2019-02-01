@@ -62,7 +62,7 @@ class MyReply(object):
             code = random_str(8)
             db.add_row('user', data={'wechat': wechat, 'level': 0, 'code': code})
             index, = db.select('user', limitation={'wechat': wechat}, keys='id')
-            code = '%s%04d'%index['id']
+            code = '%s%04d'%(code, index['id'])
             return '注册成功，验证码为{}，请联系管理员审核。'.format(code)
         return None
     # }}}
