@@ -37,7 +37,6 @@ def wechat():
     encrypt_type = request.args.get('encrypt_type', '')
     msg_signature = request.args.get('msg_signature', '')
     
-    # print(request.args)
 
     try:
         check_signature(TOKEN, signature, timestamp, nonce)
@@ -47,7 +46,6 @@ def wechat():
     if request.method == 'GET':
         return echo_str
     else:
-        # print('Raw message: \n%s' % request.data)
         crypto = WeChatCrypto(TOKEN, EncodingAESKey, AppId)
         try:
             msg = crypto.decrypt_message(
@@ -56,19 +54,13 @@ def wechat():
                 timestamp,
                 nonce
             )
-            # print('Descypted message: \n%s' % msg)
         except (InvalidSignatureException, InvalidAppIdException):
             abort(403)
 
         msg = parse_message(msg)
         
+        reply = create_reply(rpl.reply(msg), msg)
 
-        if msg.type == 'text':
-            reply = create_reply(rpl.text_reply(msg), msg)
-        elif msg.type == 'event':
-            reply = create_reply(rpl.event_reply(msg), msg)
-        else:
-            reply = create_reply('Sorry, can not handle this for now', msg)
         return crypto.encrypt_message(
             reply.render(),
             nonce,

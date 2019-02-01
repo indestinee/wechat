@@ -1,6 +1,7 @@
 from tools import *
 import random
-import bus, simple
+from simple import *
+from bus import *
 
 def random_str(n=16):
     s = 'qwertyuiopasdfgjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'
@@ -8,56 +9,63 @@ def random_str(n=16):
 
 
 
+items = [Help, Bus, AirQuality, Weather]
+instances = [item() for item in items]
+
+def text_reply(s):
+    s = s.strip().replace('_', ' ')
+    for instance in instances:
+        if instance.satisfy(s):
+            return instance.reply(s)
+    return '未知消息内容。'
+
+
 class MyReply(object):
-
-    def __init__(self):
+    def __init__(self):# {{{
         self.db = db
-
-
-    def user_level(self, wechat):
-        user_db = db.select('user', limitation={'wechat': wechat})
-        if len(user_db) == 0:
-            return -1, '尚未注册，请取消关注后重新关注！'
-        user_db = user_db[0]
-        if user_db['level'] == 0:
-            return 0, '已经注册，尚未通过审核，请联系管理员！'
-        elif user_db['level'] == 1:
-            return 1, '正常用户'
-        elif user_db['level'] == 100:
-            return 100, '管理员'
-
-    def register(self, wechat):
-        level, _ = self.user_level(wechat)
-        if level == -1:
-            try:
-                code = random_str(6)
-                db.add_row('user', data={'wechat': wechat, 'level': 0, 'code': code})
-                return '注册成功，验证码为{}，请等待审核。'.format(code)
-            except Exception as e:
-                print(e)
-                return '注册失败，请联系管理员查看错误日志！'
-        elif level == 0:
-            code = random_str(6)
-            db.upd_row('user', limitation={'wechat': wechat}, data={'code': code})
-            return '已通过注册，等待审核，验证码为{}。'.format(code)
+    # }}}
+    def reply(msg):# {{{
+        if msg.type == 'event':
+            content = self.event_op(msg)
+        elif msg.type == 'text':
+            content = self.text_op(msg)
         else:
-            return '已通过注册及审核，身份为{}。'.format(_)
-
-
-    def is_help(self, content):
-        return content.lower() in ['h', 'help', 'helps', 'bz', '帮助', 'bangzhu']
-
-    def help_query(self, content=None):
-        lmsg = LinkMsg()
-        res = '''\
-(1) 获取帮助，如发送{}。
-(2) 查询北京公交，如发送{}, {}, {}。
-(3) 查询北京雾霾指数，如发送{}。
-(4) 查询北京天气，如发送{}。
-'''.format(lmsg.add_item('h'), lmsg.add_item(549), lmsg.add_item(579), lmsg.add_item(543),\
-        lmsg.add_item('wm'), lmsg.add_item('tq'))
-        return res
-
+            content = '未知操作类型，不处理。'
+        if isinstance(content, list):
+            content = '\n'.join(content)
+        return content
+    # }}}
+    def event_op(self, msg):# {{{
+        res = self.register(msg._data['FromUserName'])
+        event = msg._data['Event']
+        if event == 'subscribe':
+            if res is None:
+                return text_reply('help')
+        return '不处理\'{}\'事件。:)'.format(event)
+    # }}}
+    def text_op(self, msg):# {{{
+        res = self.register(msg._data['FromUserName'])
+        if res is not None:
+            return res
+        content = msg.content
+        return text_reply(content)
+    # }}}
+    def user_level(self, wechat):# {{{
+        users = db.select('user', limitation={'wechat': wechat})
+        if len(users) == 0:
+            return -1
+        return users[0]['level']
+    # }}}
+    def register(self, wechat):# {{{
+        level = self.user_level(wechat)
+        if level == -1:
+            code = random_str(8)
+            db.add_row('user', data={'wechat': wechat, 'level': 0, 'code': code})
+            index, = db.select('user', limitation={'wechat': wechat}, keys='id')
+            code = '%s%04d'%index['id']
+            return '注册成功，验证码为{}，请联系管理员审核。'.format(code)
+        return None
+    # }}}
     def wm(self, content):
         return simple.wm(content)
 
@@ -101,10 +109,14 @@ class MyReply(object):
         
         return 
 
-    def event_reply(self, msg):
-        event = msg._data['Event']
-        if event == 'subscribe':
-            return self.register(msg._data['FromUserName']) + '\n' + self.help_query()
-        return '不处理\'{}\'事件。:)'.format(event)
-
 rpl = MyReply()
+
+if __name__ == '__main__':
+    while True:
+        s = input('Q:  ')
+        res = text_reply(s.strip())
+        if isinstance(res, list):
+            res = '\n'.join(res)
+        print(res)
+        print('nums =', len(res))
+
