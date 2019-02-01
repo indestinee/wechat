@@ -16,6 +16,7 @@ class Help(object):
 (2) 查询北京公交，如发送{}, {}, {}。
 (3) 查询雾霾指数，如发送{}，{}，{} （无城市则默认北京）。
 (4) 查询北京天气，如发送{}。
+注：点击蓝色链接即可自动发送。
 '''.format(lmsg.add_item('h'), lmsg.add_item(549),\
         lmsg.add_item(579), lmsg.add_item(543),\
         lmsg.add_item('wm'), lmsg.add_item('aq'),\

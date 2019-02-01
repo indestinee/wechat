@@ -17,7 +17,12 @@ def text_reply(s):
     for instance in instances:
         if instance.satisfy(s):
             return instance.reply(s)
-    return '未知消息内容。'
+
+    lmsg = LinkMsg()
+    lmsg.add_msg('未知消息内容。')
+    lmsg.add_item('请回复"帮助"来获取帮助。', '帮助')
+    lmsg.add_msg('点击蓝色链接即可自动恢复。')
+    return lmsg.dump()
 
 
 class MyReply(object):
