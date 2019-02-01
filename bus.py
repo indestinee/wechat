@@ -141,6 +141,6 @@ class Bus(object):
         response = self.sess.get(query_url, params=data, headers=headers)
         response.encoding = 'utf-8'
         stations = re_station.findall(response.text)
-        db.set_global('bus {} {}'.format(bus_id, selBDir), stations, expired_time=0)
+        db.set_global('bus {} {}'.format(bus_id, selBDir), stations, expired_time=300)
         return stations
     # }}}
