@@ -82,7 +82,8 @@ class AirQuality(object):
         tree = etree.HTML(response.text)
 
         items = tree.xpath('//div[contains(@class, \'hourAqiDiv\')]')
-        res = ''
+        res = '{}空气质量：\n'.format(city)
+        print(res)
 
         for item in items:
             _item = etree.tostring(item)
