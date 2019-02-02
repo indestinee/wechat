@@ -57,7 +57,7 @@ class MyReply(object):
         content = msg.content
         level, code = self.user_level_code(msg._data['FromUserName'])
         res = text_reply(content, level)
-        if res == LEVEL_REQUIERD:
+        if res == LEVEL_REQUIRED:
                 return res + '验证码为{}。'.format(code)
         return res
     # }}}
