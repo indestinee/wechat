@@ -9,7 +9,9 @@ class Help(object):
     def __init__(self): pass
     def satisfy(self, msg):
         return msg.lower() in {'h', 'help', 'helps', 'bz', '帮助', 'bangzhu'}
-    def reply(self, msg):
+    def reply(self, msg, level):
+        if level < EVERYONE:
+            return LEVEL_REQUIRED
         lmsg = LinkMsg()
         res = '''\
 (1) 获取帮助，如发送{}。
@@ -31,7 +33,9 @@ class Weather(object):
     def satisfy(self, msg):
         return self.re.match(msg) is not None
 
-    def reply(self, msg):
+    def reply(self, msg, level):
+        if level < NORMAL:
+            return LEVEL_REQUIRED
         _, city = self.re.match(msg).groups()
         if city == '':
             city = '北京'
@@ -62,7 +66,9 @@ class AirQuality(object):
     def satisfy(self, msg):
         return self.re.match(msg) is not None
 
-    def reply(self, msg):
+    def reply(self, msg, level):
+        if level < NORMAL:
+            return LEVEL_REQUIRED
         _, city = self.re.match(msg).groups()
         if city == '':
             city = '北京'

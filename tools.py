@@ -65,3 +65,8 @@ if __name__ == '__main__':
     pass
 
 db = DataBase('data.db', tables=__tables__)
+
+ADMIN = 100
+NORMAL = 1
+EVERYONE = 0
+LEVEL_REQUIRED = '权限不足，请联系管理员获取权限。'

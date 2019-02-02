@@ -47,7 +47,9 @@ class Bus(object):
         msg = msg.lower()
         return self.re.match(msg) is not None
 
-    def reply(self, msg):
+    def reply(self, msg, level):
+        if level < NORMAL:
+            return LEVEL_REQUIRED
         msg = msg.lower()
         _, bus_id, bus_dir, station_id = self.re.match(msg).groups()
         if bus_id is None or bus_id not in self.bus_id:

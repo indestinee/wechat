@@ -2,6 +2,7 @@ from tools import *
 import random
 from simple import *
 from bus import *
+from admin import *
 
 def random_str(n=16):
     s = 'qwertyuiopasdfgjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'
@@ -9,14 +10,14 @@ def random_str(n=16):
 
 
 
-items = [Help, Bus, AirQuality, Weather]
+items = [Help, Bus, AirQuality, Weather, Admin]
 instances = [item() for item in items]
 
-def text_reply(s):
+def text_reply(s, level):
     s = s.strip().replace('_', ' ')
     for instance in instances:
         if instance.satisfy(s):
-            return instance.reply(s)
+            return instance.reply(s, level)
 
     lmsg = LinkMsg()
     lmsg.add_msg('未知消息内容。')
@@ -54,16 +55,20 @@ class MyReply(object):
         if res is not None:
             return res
         content = msg.content
-        return text_reply(content)
+        level, code = self.user_level(msg._data['FromUserName'])
+        res = text_reply(content, level)
+        if res == LEVEL_REQUIERD:
+                return res + '验证码为{}。'.format(code)
+        return res
     # }}}
-    def user_level(self, wechat):# {{{
+    def user_level_code(self, wechat):# {{{
         users = db.select('user', limitation={'wechat': wechat})
         if len(users) == 0:
             return -1
-        return users[0]['level']
+        return users[0]['level'], users[0]['code']
     # }}}
     def register(self, wechat):# {{{
-        level = self.user_level(wechat)
+        level, _ = self.user_level_code(wechat)
         if level == -1:
             code = random_str(8)
             db.add_row('user', data={'wechat': wechat, 'level': 0, 'code': code})
@@ -72,55 +77,13 @@ class MyReply(object):
             return '注册成功，验证码为{}，请联系管理员审核。'.format(code)
         return None
     # }}}
-    def wm(self, content):
-        return simple.wm(content)
-
-    def tq(self, content):
-        return simple.tq(content)
-    
-    def is_bus(self, content):
-        try: 
-            bus_id = int(content)
-            return True
-        except: 
-            if content[:3] == 'bus':
-                return True
-            return False
-
-    def bus_query(self, content):
-        if content[:3] == 'bus':
-            return bus.bus_query(content)
-        return bus.query(content)
-
-
-    def text_reply(self, msg):
-        wechat = msg._data['FromUserName']
-        level, _ = self.user_level(wechat)
-        if level < 1:
-            return _
-        
-        content = msg.content.strip()
-
-        if self.is_help(content):
-            return self.help_query(content)
-        
-        if self.is_bus(content):
-            return self.bus_query(content)
-        
-        if content[:2] == 'wm':
-            return self.wm(content)
-
-        if content[:2] == 'tq':
-            return self.tq(content)
-        
-        return 
 
 rpl = MyReply()
 
 if __name__ == '__main__':
     while True:
         s = input('Q:  ')
-        res = text_reply(s.strip())
+        res = text_reply(s.strip(), 100)
         if isinstance(res, list):
             res = '\n'.join(res)
         print(res)
