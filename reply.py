@@ -55,7 +55,7 @@ class MyReply(object):
         if res is not None:
             return res
         content = msg.content
-        level, code = self.user_level(msg._data['FromUserName'])
+        level, code = self.user_level_code(msg._data['FromUserName'])
         res = text_reply(content, level)
         if res == LEVEL_REQUIERD:
                 return res + '验证码为{}。'.format(code)
