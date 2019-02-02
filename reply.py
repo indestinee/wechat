@@ -3,6 +3,7 @@ import random
 from simple import *
 from bus import *
 from admin import *
+from igg import *
 
 def random_str(n=16):
     s = 'qwertyuiopasdfgjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM'
@@ -10,7 +11,7 @@ def random_str(n=16):
 
 
 
-items = [Help, Bus, AirQuality, Weather, Admin]
+items = [Help, Bus, AirQuality, Weather, Admin, IggCode]
 instances = [item() for item in items]
 
 def text_reply(s, level):
@@ -65,7 +66,7 @@ class MyReply(object):
         users = db.select('user', limitation={'wechat': wechat})
         if len(users) == 0:
             return -1
-        return users[0]['level'], users[0]['code']
+        return users[0]['level'], '%s%04d'%(users[0]['code'], users[0]['id'])
     # }}}
     def register(self, wechat):# {{{
         level, _ = self.user_level_code(wechat)
