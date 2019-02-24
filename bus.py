@@ -22,6 +22,7 @@ class Bus(object):
         self.re_bus_id = re.compile(r'<dd id="selBLine">(.*?)</dd>', re.S)
         self.re_h2 = re.compile('<h2.*?>(.*?)</h2>', re.S)
         self.re_article = re.compile('<article.*?>(.*?)</article>', re.S)
+        self.re_tag = re.compile(r'<[^>]*>', re.S)
         self.bus_id_url = 'https://www.bjbus.com/home/index.php'
         bus_id_db_name = 'bus_id'
         self.bus_id = db.get_global(bus_id_db_name, None)
@@ -93,8 +94,9 @@ class Bus(object):
             try:
                 bus_dir = dirs[int(bus_dir)][0]
                 stations = self.get_bus_stations(bus_id, bus_dir)
-                station_id = stations[int(station_id)]
+                station_id = stations[int(station_id)][0]
             except: return '非法路线！请重新查询{}。'.format(lmsg_error.dump())
+
             _time = self.get_bus_time(bus_id, bus_dir, station_id)
             return _time
 
@@ -111,10 +113,10 @@ class Bus(object):
         res = response.json()
         articles = self.re_article.findall(res['html'])
         h2s = self.re_h2.findall(res['html'])
-
+        
         article = articles[0]
-        article = article.replace('<p>', '').replace('</p>', '\n')\
-                .replace('&nbsp;', ' ').replace('<span>', ''). replace('</span>', '')
+
+        article = self.re_tag.sub('', article).replace('&nbsp;', ' ')
         return '{}: {}\n当前站：{}\n{}'.format(bus_id, h2s[0], res['seq'], article.strip())
 
     def get_bus_dirs(self, bus_id):# {{{
